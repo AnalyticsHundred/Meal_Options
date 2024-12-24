@@ -2,7 +2,6 @@ import streamlit as st
 import json
 import random
 from datetime import datetime
-import pandas as pd
 
 # Meal options stored as a JSON file for persistence
 meal_options_file = "meal_options.json"
@@ -33,7 +32,7 @@ def get_today_meal_suggestions(meal_options):
     dinner = random.choice(meal_options["dinner"])
     return today, breakfast, lunch, dinner
 
-# Function to inject custom CSS for Starbucks theme
+# Function to inject custom CSS for Starbucks theme and hover effects
 def apply_custom_css():
     st.markdown(
         """
@@ -69,24 +68,64 @@ def apply_custom_css():
             background-color: #FFFFFF;
             color: #4A3C31;
         }
+        
+        /* Add CSS for buttons showing meal options */
+        .meal-option-btn {
+            position: relative;
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 16px;
+            background-color: #00704A; /* Green background */
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .meal-option-btn:hover .meal-option-menu {
+            display: block; /* Show options on hover */
+        }
+
+        .meal-option-menu {
+            display: none; /* Hide options by default */
+            position: absolute;
+            background-color: #ffffff;
+            color: #4A3C31;
+            border: 1px solid #4A3C31;
+            padding: 10px;
+            border-radius: 5px;
+            top: 100%;
+            left: 0;
+            z-index: 10;
+        }
         </style>
         """, unsafe_allow_html=True
     )
 
-# Display the meal options in a more user-friendly format (Tabular Format)
+# Display the meal options in a more user-friendly format (Hoverable buttons)
 def display_meal_options(meal_options):
     st.header("Customize Meal Options")
 
-    # Convert meal options dictionary to a pandas DataFrame for tabular display
-    meal_df = pd.DataFrame({
-        "Meal Type": ["Breakfast", "Lunch", "Dinner"],
-        "Options": [", ".join(meal_options["breakfast"]),
-                    ", ".join(meal_options["lunch"]),
-                    ", ".join(meal_options["dinner"])]
-    })
+    # Buttons with hoverable menus for breakfast, lunch, and dinner
+    meal_types = ['breakfast', 'lunch', 'dinner']
+    meal_labels = ['Breakfast', 'Lunch', 'Dinner']
 
-    # Display meal options in a tabular format
-    st.table(meal_df)
+    for i in range(3):
+        meal_type = meal_types[i]
+        meal_label = meal_labels[i]
+        options = ", ".join(meal_options[meal_type])
+        
+        # Create buttons with hover effect using custom CSS
+        with st.markdown(f"""
+        <button class="meal-option-btn">
+            {meal_label} Options
+            <div class="meal-option-menu">
+                {options}
+            </div>
+        </button>
+        """, unsafe_allow_html=True):
+            pass  # Empty pass to allow CSS styling and interaction
 
 # Add meal options to the list
 def add_meal_option(meal_type, new_option, meal_options):
@@ -110,63 +149,4 @@ def customize_meal_page():
 
     meal_options = load_meal_options()  # Load current meal options
 
-    # Button to toggle JSON display
-    show_json = st.button("Show Available Options in JSON format")
-    if show_json:
-        st.json(meal_options)  # Display current meal options in JSON format
-
-    display_meal_options(meal_options)  # Display current meal options in a tabular format
-
-    # Form to add or remove meal options
-    with st.form(key="meal_form"):
-        meal_type = st.selectbox("Select meal type", ["breakfast", "lunch", "dinner"])
-        action = st.radio("What would you like to do?", ("Add a new option", "Remove an existing option"))
-        meal_option = st.text_input(f"Enter the meal option to {'add' if action == 'Add a new option' else 'remove'}:")
-
-        if action == "Remove an existing option":
-            # Create a dropdown to select meal option to remove
-            meal_option = st.selectbox(f"Select a meal option to remove from {meal_type.capitalize()}:",
-                                      meal_options[meal_type])
-
-        submit_button = st.form_submit_button(label="Submit")
-
-        if submit_button:
-            if action == "Add a new option":
-                add_meal_option(meal_type, meal_option, meal_options)
-            elif action == "Remove an existing option":
-                remove_meal_option(meal_type, meal_option, meal_options)
-
-            # After modification, show only updated meal options
-            st.subheader(f"Updated {meal_type.capitalize()} Options")
-            st.write(meal_options[meal_type])
-
-            # Save changes
-            save_meal_options(meal_options)
-
-    st.info("Remember to update your meal options regularly to keep your meals diverse and fresh!")
-
-# Homepage: Show breakfast, lunch and dinner options for the current date
-def homepage():
-    meal_options = load_meal_options()
-    today, breakfast, lunch, dinner = get_today_meal_suggestions(meal_options)
-
-    st.title("Today's Meal Suggestions")
-    st.write(f"Today's Date: {today}")
-    st.write(f"**Breakfast**: {breakfast}")
-    st.write(f"**Lunch**: {lunch}")
-    st.write(f"**Dinner**: {dinner}")
-
-# Streamlit Page Selection
-def main():
-    apply_custom_css()  # Apply custom styling
-
-    menu = ["Homepage", "Customize Meal Lists"]
-    choice = st.sidebar.selectbox("Select a page", menu)
-
-    if choice == "Homepage":
-        homepage()  # Show today's meal suggestions
-    elif choice == "Customize Meal Lists":
-        customize_meal_page()  # Customize meal options
-
-if __name__ == "__main__":
-    main()
+    display_meal_option
