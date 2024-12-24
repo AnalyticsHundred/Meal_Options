@@ -149,4 +149,58 @@ def customize_meal_page():
 
     meal_options = load_meal_options()  # Load current meal options
 
-    display_meal_option
+    display_meal_options(meal_options)  # Display current meal options with hoverable menus
+
+    # Form to add or remove meal options
+    with st.form(key="meal_form"):
+        meal_type = st.selectbox("Select meal type", ["breakfast", "lunch", "dinner"])
+        action = st.radio("What would you like to do?", ("Add a new option", "Remove an existing option"))
+        meal_option = st.text_input(f"Enter the meal option to {'add' if action == 'Add a new option' else 'remove'}:")
+
+        if action == "Remove an existing option":
+            # Create a dropdown to select meal option to remove
+            meal_option = st.selectbox(f"Select a meal option to remove from {meal_type.capitalize()}:",
+                                      meal_options[meal_type])
+
+        submit_button = st.form_submit_button(label="Submit")
+
+        if submit_button:
+            if action == "Add a new option":
+                add_meal_option(meal_type, meal_option, meal_options)
+            elif action == "Remove an existing option":
+                remove_meal_option(meal_type, meal_option, meal_options)
+
+            # After modification, show only updated meal options
+            st.subheader(f"Updated {meal_type.capitalize()} Options")
+            st.write(meal_options[meal_type])
+
+            # Save changes
+            save_meal_options(meal_options)
+
+    st.info("Remember to update your meal options regularly to keep your meals diverse and fresh!")
+
+# Homepage: Show breakfast, lunch and dinner options for the current date
+def homepage():
+    meal_options = load_meal_options()
+    today, breakfast, lunch, dinner = get_today_meal_suggestions(meal_options)
+
+    st.title("Today's Meal Suggestions")
+    st.write(f"Today's Date: {today}")
+    st.write(f"**Breakfast**: {breakfast}")
+    st.write(f"**Lunch**: {lunch}")
+    st.write(f"**Dinner**: {dinner}")
+
+# Streamlit Page Selection
+def main():
+    apply_custom_css()  # Apply custom styling
+
+    menu = ["Homepage", "Customize Meal Lists"]
+    choice = st.sidebar.selectbox("Select a page", menu)
+
+    if choice == "Homepage":
+        homepage()  # Show today's meal suggestions
+    elif choice == "Customize Meal Lists":
+        customize_meal_page()  # Customize meal options
+
+if __name__ == "__main__":
+    main()
