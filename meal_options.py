@@ -38,13 +38,16 @@ def apply_custom_css():
         """
         <style>
         body {
-            background-color: #F2F2F2; /* Light Beige background */
+            background-color: #F4F1E1; /* Light Cream Background */
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Clean Font */
         }
         .stApp {
-            color: #4A3C31; /* Dark Brown text color */
+            color: #3E4A51; /* Dark Gray text color for better readability */
         }
         .stTitle {
             color: #00704A; /* Starbucks Green for titles */
+            font-size: 32px;
+            font-weight: bold;
         }
         .stSubheader {
             color: #00704A; /* Starbucks Green for subheaders */
@@ -52,21 +55,25 @@ def apply_custom_css():
         .stButton>button {
             background-color: #00704A; /* Green background for buttons */
             color: white; /* White text color for buttons */
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 18px;
         }
         .stButton>button:hover {
             background-color: #4A3C31; /* Dark Brown hover for buttons */
         }
         .stTextInput>div>input {
             background-color: #FFFFFF; /* White background for input fields */
-            color: #4A3C31; /* Dark Brown text for inputs */
+            color: #3E4A51; /* Dark Gray text for inputs */
+            font-size: 16px;
         }
         .stSelectbox>div>div>input {
             background-color: #FFFFFF; /* White background for dropdowns */
-            color: #4A3C31; /* Dark Brown text for dropdowns */
+            color: #3E4A51; /* Dark Gray text for dropdowns */
         }
         .stForm>div>div>input {
             background-color: #FFFFFF;
-            color: #4A3C31;
+            color: #3E4A51;
         }
         
         /* Add CSS for buttons showing meal options */
@@ -91,13 +98,14 @@ def apply_custom_css():
             display: none; /* Hide options by default */
             position: absolute;
             background-color: #ffffff;
-            color: #4A3C31;
+            color: #3E4A51;
             border: 1px solid #4A3C31;
             padding: 10px;
             border-radius: 5px;
             top: 100%;
             left: 0;
             z-index: 10;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
         </style>
         """, unsafe_allow_html=True
@@ -179,8 +187,8 @@ def customize_meal_page():
 
     st.info("Remember to update your meal options regularly to keep your meals diverse and fresh!")
 
-# Homepage: Show breakfast, lunch and dinner options for the current date
-def homepage():
+# Today's Suggestion: Show breakfast, lunch and dinner options for the current date
+def todays_suggestion():
     meal_options = load_meal_options()
     today, breakfast, lunch, dinner = get_today_meal_suggestions(meal_options)
 
@@ -194,11 +202,11 @@ def homepage():
 def main():
     apply_custom_css()  # Apply custom styling
 
-    menu = ["Homepage", "Customize Meal Lists"]
+    menu = ["Today's Suggestion", "Customize Meal Lists"]
     choice = st.sidebar.selectbox("Select a page", menu)
 
-    if choice == "Homepage":
-        homepage()  # Show today's meal suggestions
+    if choice == "Today's Suggestion":
+        todays_suggestion()  # Show today's meal suggestions
     elif choice == "Customize Meal Lists":
         customize_meal_page()  # Customize meal options
 
