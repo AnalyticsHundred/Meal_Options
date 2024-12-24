@@ -32,23 +32,22 @@ def save_meal_options(meal_options):
 def todays_suggestion_page():
     meal_options = load_meal_options()  # Load the meal options from the JSON file
     
-    # Suggest a random meal for each category
-    breakfast = meal_options.get("breakfast", [])
-    lunch = meal_options.get("lunch", [])
-    dinner = meal_options.get("dinner", [])
-    
-    breakfast_suggestion = random.choice(breakfast) if breakfast else "No options available"
-    lunch_suggestion = random.choice(lunch) if lunch else "No options available"
-    dinner_suggestion = random.choice(dinner) if dinner else "No options available"
+    # Check if the session state exists for today's suggestions
+    if "breakfast_suggestion" not in st.session_state:
+        st.session_state.breakfast_suggestion = random.choice(meal_options.get("breakfast", []))
+    if "lunch_suggestion" not in st.session_state:
+        st.session_state.lunch_suggestion = random.choice(meal_options.get("lunch", []))
+    if "dinner_suggestion" not in st.session_state:
+        st.session_state.dinner_suggestion = random.choice(meal_options.get("dinner", []))
     
     # Add a fun and visually appealing design
     st.title("🍽️ Today's Meal Suggestions 🍽️")
     st.markdown("## Enjoy your meals for today!")
 
     # Display today's suggestions with a fun design
-    st.markdown(f"**Breakfast**: {breakfast_suggestion}")
-    st.markdown(f"**Lunch**: {lunch_suggestion}")
-    st.markdown(f"**Dinner**: {dinner_suggestion}")
+    st.markdown(f"**Breakfast**: {st.session_state.breakfast_suggestion}")
+    st.markdown(f"**Lunch**: {st.session_state.lunch_suggestion}")
+    st.markdown(f"**Dinner**: {st.session_state.dinner_suggestion}")
     
     # Allow user to change suggestions by clicking the button
     st.markdown("### Want to change a suggestion?")
@@ -57,18 +56,18 @@ def todays_suggestion_page():
     
     with col1:
         if st.button("Change Suggestion - Breakfast"):
-            breakfast_suggestion = random.choice(breakfast) if breakfast else "No options available"
-            st.write(f"**Breakfast**: {breakfast_suggestion}")
+            st.session_state.breakfast_suggestion = random.choice(meal_options.get("breakfast", []))
+            st.experimental_rerun()
     
     with col2:
         if st.button("Change Suggestion - Lunch"):
-            lunch_suggestion = random.choice(lunch) if lunch else "No options available"
-            st.write(f"**Lunch**: {lunch_suggestion}")
+            st.session_state.lunch_suggestion = random.choice(meal_options.get("lunch", []))
+            st.experimental_rerun()
     
     with col3:
         if st.button("Change Suggestion - Dinner"):
-            dinner_suggestion = random.choice(dinner) if dinner else "No options available"
-            st.write(f"**Dinner**: {dinner_suggestion}")
+            st.session_state.dinner_suggestion = random.choice(meal_options.get("dinner", []))
+            st.experimental_rerun()
 
 # Function to customize meal options
 def customize_meal_page():
