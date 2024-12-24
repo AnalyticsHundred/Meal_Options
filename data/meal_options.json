@@ -1,0 +1,27 @@
+{
+  "breakfast": [
+    "Vermicelli",
+    "Uthappam",
+    "Chilla",
+    "Boiled eggs",
+    "Poha",
+    "Upma"
+  ],
+  "lunch": [
+    "Dal rice",
+    "Soyabean",
+    "Egg curry",
+    "Palak Paneer",
+    "Khichdi",
+    "Paneer Paratha",
+    "Methi Paratha"
+  ],
+  "dinner": [
+    "Broccoli and Tofu Salad",
+    "Uttapam",
+    "Koki",
+    "Chilla",
+    "Cabbage Carrot and Beetroot Salad",
+    "Methi Rice"
+  ]
+}
