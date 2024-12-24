@@ -4,7 +4,7 @@ import random
 from datetime import datetime
 
 # Meal options stored as a JSON file for persistence
-meal_options_file = "meal_options.json"
+meal_options_file = "data/meal_options.json"
 
 # Function to load the meal options from the JSON file
 def load_meal_options():
