@@ -1,5 +1,7 @@
 import streamlit as st
 import json
+import random
+from datetime import datetime
 
 # Meal options stored as a JSON file for persistence
 meal_options_file = "meal_options.json"
@@ -21,6 +23,14 @@ def load_meal_options():
 def save_meal_options(meal_options):
     with open(meal_options_file, "w") as f:
         json.dump(meal_options, f, indent=4)
+
+# Function to get today's meal suggestions
+def get_today_meal_suggestions(meal_options):
+    today = datetime.today().strftime('%Y-%m-%d')
+    breakfast = random.choice(meal_options["breakfast"])
+    lunch = random.choice(meal_options["lunch"])
+    dinner = random.choice(meal_options["dinner"])
+    return today, breakfast, lunch, dinner
 
 # Display the current meal options in a more user-friendly format
 def display_meal_options(meal_options):
@@ -65,6 +75,11 @@ def customize_meal_page():
         action = st.radio("What would you like to do?", ("Add a new option", "Remove an existing option"))
         meal_option = st.text_input(f"Enter the meal option to {'add' if action == 'Add a new option' else 'remove'}:")
 
+        if action == "Remove an existing option":
+            # Create a dropdown to select meal option to remove
+            meal_option = st.selectbox(f"Select a meal option to remove from {meal_type.capitalize()}:",
+                                      meal_options[meal_type])
+
         submit_button = st.form_submit_button(label="Submit")
 
         if submit_button:
@@ -82,17 +97,26 @@ def customize_meal_page():
 
     st.info("Remember to update your meal options regularly to keep your meals diverse and fresh!")
 
+# Homepage: Show breakfast, lunch, and dinner options for the current date
+def homepage():
+    meal_options = load_meal_options()
+    today, breakfast, lunch, dinner = get_today_meal_suggestions(meal_options)
+
+    st.title("Today's Meal Suggestions")
+    st.write(f"Today's Date: {today}")
+    st.write(f"**Breakfast**: {breakfast}")
+    st.write(f"**Lunch**: {lunch}")
+    st.write(f"**Dinner**: {dinner}")
+
 # Streamlit Page Selection
 def main():
     menu = ["Homepage", "Customize Meal Lists"]
     choice = st.sidebar.selectbox("Select a page", menu)
 
     if choice == "Homepage":
-        st.title("Welcome to Your Meal Planner!")
-        st.write("On the **Customize Meal Lists** page, you can modify your meal options.")
-        # Add your homepage content here
+        homepage()  # Show today's meal suggestions
     elif choice == "Customize Meal Lists":
-        customize_meal_page()
+        customize_meal_page()  # Customize meal options
 
 if __name__ == "__main__":
     main()
