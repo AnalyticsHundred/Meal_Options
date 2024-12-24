@@ -34,4 +34,6 @@ def apply_custom_css():
             background-color: #FFFFFF;
             color: #4A3C31;
         }
-        </st
+        </style>
+        """, unsafe_allow_html=True
+    )
