@@ -194,9 +194,30 @@ def todays_suggestion():
 
     st.title("Today's Meal Suggestions")
     st.write(f"Today's Date: {today}")
-    st.write(f"**Breakfast**: {breakfast}")
-    st.write(f"**Lunch**: {lunch}")
-    st.write(f"**Dinner**: {dinner}")
+
+    # Show the options with a "Change Suggestion" button next to each meal option
+    col1, col2, col3 = st.columns(3)
+
+    # Display the breakfast with a button to change suggestion
+    with col1:
+        st.write(f"**Breakfast**: {breakfast}")
+        if st.button("Change Breakfast Suggestion"):
+            breakfast = random.choice(meal_options["breakfast"])
+            st.write(f"New Breakfast Suggestion: {breakfast}")
+
+    # Display the lunch with a button to change suggestion
+    with col2:
+        st.write(f"**Lunch**: {lunch}")
+        if st.button("Change Lunch Suggestion"):
+            lunch = random.choice(meal_options["lunch"])
+            st.write(f"New Lunch Suggestion: {lunch}")
+
+    # Display the dinner with a button to change suggestion
+    with col3:
+        st.write(f"**Dinner**: {dinner}")
+        if st.button("Change Dinner Suggestion"):
+            dinner = random.choice(meal_options["dinner"])
+            st.write(f"New Dinner Suggestion: {dinner}")
 
 # Streamlit Page Selection
 def main():
