@@ -75,8 +75,26 @@ def apply_custom_css():
             background-color: #FFFFFF;
             color: #3E4A51;
         }
-        
-        /* Add CSS for buttons showing meal options */
+
+        /* Styling for the Change Suggestion button */
+        .change-suggestion-btn {
+            background-color: #4A3C31; /* Dark Brown background */
+            color: white; /* White text */
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .change-suggestion-btn:hover {
+            background-color: #00704A; /* Starbucks Green on hover */
+            transform: scale(1.1); /* Slight zoom on hover */
+        }
+
+        /* Styling for the buttons that show meal options */
         .meal-option-btn {
             position: relative;
             display: inline-block;
@@ -201,21 +219,21 @@ def todays_suggestion():
     # Display the breakfast with a button to change suggestion
     with col1:
         st.write(f"**Breakfast**: {breakfast}")
-        if st.button("Change Breakfast Suggestion"):
+        if st.button("Change Breakfast Suggestion", key="breakfast_btn"):
             breakfast = random.choice(meal_options["breakfast"])
             st.write(f"New Breakfast Suggestion: {breakfast}")
 
     # Display the lunch with a button to change suggestion
     with col2:
         st.write(f"**Lunch**: {lunch}")
-        if st.button("Change Lunch Suggestion"):
+        if st.button("Change Lunch Suggestion", key="lunch_btn"):
             lunch = random.choice(meal_options["lunch"])
             st.write(f"New Lunch Suggestion: {lunch}")
 
     # Display the dinner with a button to change suggestion
     with col3:
         st.write(f"**Dinner**: {dinner}")
-        if st.button("Change Dinner Suggestion"):
+        if st.button("Change Dinner Suggestion", key="dinner_btn"):
             dinner = random.choice(meal_options["dinner"])
             st.write(f"New Dinner Suggestion: {dinner}")
 
