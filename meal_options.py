@@ -213,29 +213,34 @@ def todays_suggestion():
     st.title("Today's Meal Suggestions")
     st.write(f"Today's Date: {today}")
 
+    # Initialize session state for suggestions
+    if "breakfast" not in st.session_state:
+        st.session_state.breakfast = breakfast
+    if "lunch" not in st.session_state:
+        st.session_state.lunch = lunch
+    if "dinner" not in st.session_state:
+        st.session_state.dinner = dinner
+
     # Show the options with a "Change Suggestion" button next to each meal option
     col1, col2, col3 = st.columns(3)
 
     # Display the breakfast with a button to change suggestion
     with col1:
-        st.write(f"**Breakfast**: {breakfast}")
+        st.write(f"**Breakfast**: {st.session_state.breakfast}")
         if st.button("Change Breakfast Suggestion", key="breakfast_btn"):
-            breakfast = random.choice(meal_options["breakfast"])
-            st.write(f"New Breakfast Suggestion: {breakfast}")
+            st.session_state.breakfast = random.choice(meal_options["breakfast"])
 
     # Display the lunch with a button to change suggestion
     with col2:
-        st.write(f"**Lunch**: {lunch}")
+        st.write(f"**Lunch**: {st.session_state.lunch}")
         if st.button("Change Lunch Suggestion", key="lunch_btn"):
-            lunch = random.choice(meal_options["lunch"])
-            st.write(f"New Lunch Suggestion: {lunch}")
+            st.session_state.lunch = random.choice(meal_options["lunch"])
 
     # Display the dinner with a button to change suggestion
     with col3:
-        st.write(f"**Dinner**: {dinner}")
+        st.write(f"**Dinner**: {st.session_state.dinner}")
         if st.button("Change Dinner Suggestion", key="dinner_btn"):
-            dinner = random.choice(meal_options["dinner"])
-            st.write(f"New Dinner Suggestion: {dinner}")
+            st.session_state.dinner = random.choice(meal_options["dinner"])
 
 # Streamlit Page Selection
 def main():
@@ -251,4 +256,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-   
