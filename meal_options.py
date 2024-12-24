@@ -12,17 +12,11 @@ def load_meal_options():
         with open(meal_options_file, "r") as f:
             return json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
-        # Return a default structure if the file does not exist or is empty
         return {
             "breakfast": ["Pancakes", "Omelette", "Smoothie"],
             "lunch": ["Salad", "Sandwich", "Pizza"],
             "dinner": ["Pasta", "Steak", "Soup"]
         }
-
-# Function to save the updated meal options back to the JSON file
-def save_meal_options(meal_options):
-    with open(meal_options_file, "w") as f:
-        json.dump(meal_options, f, indent=4)
 
 # Function to get today's meal suggestions
 def get_today_meal_suggestions(meal_options):
@@ -32,7 +26,7 @@ def get_today_meal_suggestions(meal_options):
     dinner = random.choice(meal_options["dinner"])
     return today, breakfast, lunch, dinner
 
-# Function to inject custom CSS for Starbucks theme and hover effects
+# Function to apply custom CSS for the user interface
 def apply_custom_css():
     st.markdown(
         """
@@ -75,7 +69,6 @@ def apply_custom_css():
             background-color: #FFFFFF;
             color: #3E4A51;
         }
-
         /* Styling for the Change Suggestion button */
         .change-suggestion-btn {
             background-color: #4A3C31; /* Dark Brown background */
@@ -88,124 +81,44 @@ def apply_custom_css():
             transition: all 0.3s ease;
             margin-top: 10px;
         }
-
         .change-suggestion-btn:hover {
             background-color: #00704A; /* Starbucks Green on hover */
             transform: scale(1.1); /* Slight zoom on hover */
         }
-
-        /* Styling for the buttons that show meal options */
-        .meal-option-btn {
-            position: relative;
-            display: inline-block;
-            padding: 10px 20px;
+        /* Styling for meal options */
+        .meal-option-container {
+            padding: 15px;
+            border-radius: 8px;
             margin: 10px;
-            font-size: 16px;
-            background-color: #00704A; /* Green background */
-            color: white;
-            border: none;
-            cursor: pointer;
-            border-radius: 5px;
+            background-color: #FFFFFF;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-
-        .meal-option-btn:hover .meal-option-menu {
-            display: block; /* Show options on hover */
+        .meal-option-header {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00704A;
         }
-
-        .meal-option-menu {
-            display: none; /* Hide options by default */
-            position: absolute;
-            background-color: #ffffff;
-            color: #3E4A51;
-            border: 1px solid #4A3C31;
-            padding: 10px;
-            border-radius: 5px;
-            top: 100%;
-            left: 0;
-            z-index: 10;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        .meal-option {
+            padding: 15px;
+            font-size: 18px;
+            background-color: #f1f1f1;
+            border-radius: 8px;
+            margin: 5px 0;
+        }
+        .meal-option.breakfast {
+            background-color: #FFEB3B;
+        }
+        .meal-option.lunch {
+            background-color: #8BC34A;
+        }
+        .meal-option.dinner {
+            background-color: #FF5722;
         }
         </style>
         """, unsafe_allow_html=True
     )
 
-# Display the meal options in a more user-friendly format (Hoverable buttons)
-def display_meal_options(meal_options):
-    st.header("Customize Meal Options")
-
-    # Buttons with hoverable menus for breakfast, lunch, and dinner
-    meal_types = ['breakfast', 'lunch', 'dinner']
-    meal_labels = ['Breakfast', 'Lunch', 'Dinner']
-
-    for i in range(3):
-        meal_type = meal_types[i]
-        meal_label = meal_labels[i]
-        options = ", ".join(meal_options[meal_type])
-        
-        # Create buttons with hover effect using custom CSS
-        with st.markdown(f"""
-        <button class="meal-option-btn">
-            {meal_label} Options
-            <div class="meal-option-menu">
-                {options}
-            </div>
-        </button>
-        """, unsafe_allow_html=True):
-            pass  # Empty pass to allow CSS styling and interaction
-
-# Add meal options to the list
-def add_meal_option(meal_type, new_option, meal_options):
-    if new_option and new_option not in meal_options[meal_type]:
-        meal_options[meal_type].append(new_option)
-        st.success(f"{new_option} added to {meal_type.capitalize()} options!")
-    else:
-        st.warning(f"{new_option} is already in the {meal_type.capitalize()} options or invalid!")
-
-# Remove meal options from the list
-def remove_meal_option(meal_type, option_to_remove, meal_options):
-    if option_to_remove in meal_options[meal_type]:
-        meal_options[meal_type].remove(option_to_remove)
-        st.success(f"{option_to_remove} removed from {meal_type.capitalize()} options!")
-    else:
-        st.warning(f"{option_to_remove} not found in {meal_type.capitalize()} options!")
-
-# Streamlit layout for Customize Meal Lists
-def customize_meal_page():
-    st.title("Customize Your Meal Options")
-
-    meal_options = load_meal_options()  # Load current meal options
-
-    display_meal_options(meal_options)  # Display current meal options with hoverable menus
-
-    # Form to add or remove meal options
-    with st.form(key="meal_form"):
-        meal_type = st.selectbox("Select meal type", ["breakfast", "lunch", "dinner"])
-        action = st.radio("What would you like to do?", ("Add a new option", "Remove an existing option"))
-        meal_option = st.text_input(f"Enter the meal option to {'add' if action == 'Add a new option' else 'remove'}:")
-
-        if action == "Remove an existing option":
-            # Create a dropdown to select meal option to remove
-            meal_option = st.selectbox(f"Select a meal option to remove from {meal_type.capitalize()}:",
-                                      meal_options[meal_type])
-
-        submit_button = st.form_submit_button(label="Submit")
-
-        if submit_button:
-            if action == "Add a new option":
-                add_meal_option(meal_type, meal_option, meal_options)
-            elif action == "Remove an existing option":
-                remove_meal_option(meal_type, meal_option, meal_options)
-
-            # After modification, show only updated meal options
-            st.subheader(f"Updated {meal_type.capitalize()} Options")
-            st.write(meal_options[meal_type])
-
-            # Save changes
-            save_meal_options(meal_options)
-
-    st.info("Remember to update your meal options regularly to keep your meals diverse and fresh!")
-
-# Today's Suggestion: Show breakfast, lunch and dinner options for the current date
+# Display meal options for today's suggestion page
 def todays_suggestion():
     meal_options = load_meal_options()
     today, breakfast, lunch, dinner = get_today_meal_suggestions(meal_options)
@@ -213,7 +126,7 @@ def todays_suggestion():
     st.title("Today's Meal Suggestions")
     st.write(f"Today's Date: {today}")
 
-    # Initialize session state for suggestions
+    # Initialize session state for suggestions if not already initialized
     if "breakfast" not in st.session_state:
         st.session_state.breakfast = breakfast
     if "lunch" not in st.session_state:
@@ -221,28 +134,36 @@ def todays_suggestion():
     if "dinner" not in st.session_state:
         st.session_state.dinner = dinner
 
-    # Show the options with a "Change Suggestion" button next to each meal option
     col1, col2, col3 = st.columns(3)
 
-    # Display the breakfast with a button to change suggestion
+    # Breakfast Section
     with col1:
-        st.write(f"**Breakfast**: {st.session_state.breakfast}")
+        st.markdown(f"<div class='meal-option-container'>", unsafe_allow_html=True)
+        st.markdown("<div class='meal-option-header'>Breakfast</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='meal-option breakfast'>{st.session_state.breakfast}</div>", unsafe_allow_html=True)
         if st.button("Change Breakfast Suggestion", key="breakfast_btn"):
             st.session_state.breakfast = random.choice(meal_options["breakfast"])
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    # Display the lunch with a button to change suggestion
+    # Lunch Section
     with col2:
-        st.write(f"**Lunch**: {st.session_state.lunch}")
+        st.markdown(f"<div class='meal-option-container'>", unsafe_allow_html=True)
+        st.markdown("<div class='meal-option-header'>Lunch</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='meal-option lunch'>{st.session_state.lunch}</div>", unsafe_allow_html=True)
         if st.button("Change Lunch Suggestion", key="lunch_btn"):
             st.session_state.lunch = random.choice(meal_options["lunch"])
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    # Display the dinner with a button to change suggestion
+    # Dinner Section
     with col3:
-        st.write(f"**Dinner**: {st.session_state.dinner}")
+        st.markdown(f"<div class='meal-option-container'>", unsafe_allow_html=True)
+        st.markdown("<div class='meal-option-header'>Dinner</div>", unsafe_allow_html=True)
+        st.markdown(f"<div class='meal-option dinner'>{st.session_state.dinner}</div>", unsafe_allow_html=True)
         if st.button("Change Dinner Suggestion", key="dinner_btn"):
             st.session_state.dinner = random.choice(meal_options["dinner"])
+        st.markdown("</div>", unsafe_allow_html=True)
 
-# Streamlit Page Selection
+# Streamlit layout
 def main():
     apply_custom_css()  # Apply custom styling
 
