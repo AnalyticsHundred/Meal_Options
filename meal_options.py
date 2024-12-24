@@ -49,25 +49,14 @@ def todays_suggestion_page():
     st.markdown(f"**Lunch**: {st.session_state.lunch_suggestion}")
     st.markdown(f"**Dinner**: {st.session_state.dinner_suggestion}")
     
-    # Allow user to change suggestions by clicking the button
-    st.markdown("### Want to change a suggestion?")
+    # Allow user to change all suggestions by clicking the button
+    st.markdown("### Want to change all suggestions at once?")
     
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        if st.button("Change Suggestion - Breakfast"):
-            st.session_state.breakfast_suggestion = random.choice(meal_options.get("breakfast", []))
-            st.experimental_rerun()
-    
-    with col2:
-        if st.button("Change Suggestion - Lunch"):
-            st.session_state.lunch_suggestion = random.choice(meal_options.get("lunch", []))
-            st.experimental_rerun()
-    
-    with col3:
-        if st.button("Change Suggestion - Dinner"):
-            st.session_state.dinner_suggestion = random.choice(meal_options.get("dinner", []))
-            st.experimental_rerun()
+    if st.button("Change All Suggestions"):
+        st.session_state.breakfast_suggestion = random.choice(meal_options.get("breakfast", []))
+        st.session_state.lunch_suggestion = random.choice(meal_options.get("lunch", []))
+        st.session_state.dinner_suggestion = random.choice(meal_options.get("dinner", []))
+        st.experimental_rerun()  # Refresh the page after changing suggestions
 
 # Function to customize meal options
 def customize_meal_page():
