@@ -1,150 +1,98 @@
 import streamlit as st
-import random
 import json
-from datetime import datetime
 
-# Path to the JSON file that stores the meal options
-MEAL_OPTIONS_FILE = "meal_options.json"
+# Meal options stored as a JSON file for persistence
+meal_options_file = "meal_options.json"
 
-# Function to load meal options from the JSON file
+# Function to load the meal options from the JSON file
 def load_meal_options():
     try:
-        with open(MEAL_OPTIONS_FILE, "r") as f:
-            meal_data = json.load(f)
-            return meal_data
-    except FileNotFoundError:
-        # If the file doesn't exist, return default meal options
+        with open(meal_options_file, "r") as f:
+            return json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        # Return a default structure if the file does not exist or is empty
         return {
-            "breakfast": ["Pancakes", "Omelette", "Smoothie", "Cereal", "Avocado Toast"],
-            "lunch": ["Grilled Chicken Salad", "Pasta", "Burger", "Sushi", "Vegetable Stir-fry"],
-            "dinner": ["Steak", "Fish Tacos", "Vegetarian Chili", "Spaghetti", "Chicken Curry"]
+            "breakfast": ["Pancakes", "Omelette", "Smoothie"],
+            "lunch": ["Salad", "Sandwich", "Pizza"],
+            "dinner": ["Pasta", "Steak", "Soup"]
         }
 
-# Function to save meal options to the JSON file
-def save_meal_options(meal_data):
-    with open(MEAL_OPTIONS_FILE, "w") as f:
-        json.dump(meal_data, f)
+# Function to save the updated meal options back to the JSON file
+def save_meal_options(meal_options):
+    with open(meal_options_file, "w") as f:
+        json.dump(meal_options, f, indent=4)
 
-# Load the meal options from the JSON file
-meal_options = load_meal_options()
+# Display the current meal options in a more user-friendly format
+def display_meal_options(meal_options):
+    st.header("Customize Meal Options")
 
-# Function to generate meal suggestions
-def generate_meal_suggestions(meal_type):
-    return random.choice(meal_options[meal_type])
-
-# Function to add a new option to the list
-def add_option(meal_type, option):
-    if option not in meal_options[meal_type]:
-        meal_options[meal_type].append(option)
-        save_meal_options(meal_options)  # Save updated meal options
-    else:
-        st.error(f"{option} is already in the {meal_type} options.")
-
-# Function to remove an option from the list
-def remove_option(meal_type, option):
-    if option in meal_options[meal_type]:
-        meal_options[meal_type].remove(option)
-        save_meal_options(meal_options)  # Save updated meal options
-    else:
-        st.error(f"{option} is not in the {meal_type} options.")
-
-# Homepage: Meal suggestions page
-def home_page():
-    st.title("Daily Meal Suggestions")
-    
-    # Display the current date
-    today = datetime.now().strftime("%Y-%m-%d")
-    st.subheader(f"Meal Suggestions for {today}")
-    
-    # Generate meal suggestions
-    breakfast = generate_meal_suggestions('breakfast')
-    lunch = generate_meal_suggestions('lunch')
-    dinner = generate_meal_suggestions('dinner')
-    
-    # Display meals and buttons for generating new meals
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        st.write(f"**Breakfast**: {breakfast}")
-        if st.button('Generate Breakfast', key="breakfast"):
-            breakfast = generate_meal_suggestions('breakfast')
-            st.write(f"**Breakfast**: {breakfast}")
-    
-    with col2:
-        st.write(f"**Lunch**: {lunch}")
-        if st.button('Generate Lunch', key="lunch"):
-            lunch = generate_meal_suggestions('lunch')
-            st.write(f"**Lunch**: {lunch}")
-    
-    with col3:
-        st.write(f"**Dinner**: {dinner}")
-        if st.button('Generate Dinner', key="dinner"):
-            dinner = generate_meal_suggestions('dinner')
-            st.write(f"**Dinner**: {dinner}")
-
-# Customization page: Allows the user to add or remove meal options
-def customize_page():
-    st.title("Customize Meal Lists")
-
-    # Display current meal options
-    st.subheader("Current Meal Options")
-
-    st.write("### Breakfast Options")
+    st.subheader("Breakfast Options")
     st.write(meal_options["breakfast"])
-    
-    st.write("### Lunch Options")
+
+    st.subheader("Lunch Options")
     st.write(meal_options["lunch"])
 
-    st.write("### Dinner Options")
+    st.subheader("Dinner Options")
     st.write(meal_options["dinner"])
 
-    # Add or Remove options for Breakfast, Lunch, Dinner
-    meal_type = st.selectbox("Choose a meal to customize", ['breakfast', 'lunch', 'dinner'])
-    action = st.radio("Choose action", ["Add", "Remove"])
-    option = st.text_input(f"Enter meal option to {action.lower()}", "")
+# Add meal options to the list
+def add_meal_option(meal_type, new_option, meal_options):
+    if new_option and new_option not in meal_options[meal_type]:
+        meal_options[meal_type].append(new_option)
+        st.success(f"{new_option} added to {meal_type.capitalize()} options!")
+    else:
+        st.warning(f"{new_option} is already in the {meal_type.capitalize()} options or invalid!")
 
-    if action == "Add" and option:
-        if option == "":
-            st.error("Please enter a meal option to add.")
-        elif option in meal_options[meal_type]:
-            st.error(f"{option} is already in the {meal_type} options.")
-        else:
-            if st.button(f"Add {option} to {meal_type.capitalize()}"):
-                add_option(meal_type, option)
-                st.success(f"Added {option} to {meal_type.capitalize()} options.")
-    
-    elif action == "Remove" and option:
-        if option == "":
-            st.error("Please enter a meal option to remove.")
-        elif option not in meal_options[meal_type]:
-            st.error(f"{option} is not in the {meal_type} options.")
-        else:
-            if st.button(f"Remove {option} from {meal_type.capitalize()}"):
-                remove_option(meal_type, option)
-                st.success(f"Removed {option} from {meal_type.capitalize()} options.")
-    
-    # Display the updated lists
-    st.write("### Updated Meal Options")
+# Remove meal options from the list
+def remove_meal_option(meal_type, option_to_remove, meal_options):
+    if option_to_remove in meal_options[meal_type]:
+        meal_options[meal_type].remove(option_to_remove)
+        st.success(f"{option_to_remove} removed from {meal_type.capitalize()} options!")
+    else:
+        st.warning(f"{option_to_remove} not found in {meal_type.capitalize()} options!")
 
-    st.write("### Breakfast Options")
-    st.write(meal_options["breakfast"])
-    
-    st.write("### Lunch Options")
-    st.write(meal_options["lunch"])
+# Streamlit layout for Customize Meal Lists
+def customize_meal_page():
+    st.title("Customize Your Meal Options")
 
-    st.write("### Dinner Options")
-    st.write(meal_options["dinner"])
+    meal_options = load_meal_options()  # Load current meal options
 
-# Streamlit app to switch between home page and customize page
+    display_meal_options(meal_options)  # Display current meal options
+
+    # Form to add or remove meal options
+    with st.form(key="meal_form"):
+        meal_type = st.selectbox("Select meal type", ["breakfast", "lunch", "dinner"])
+        action = st.radio("What would you like to do?", ("Add a new option", "Remove an existing option"))
+        meal_option = st.text_input(f"Enter the meal option to {'add' if action == 'Add a new option' else 'remove'}:")
+
+        submit_button = st.form_submit_button(label="Submit")
+
+        if submit_button:
+            if action == "Add a new option":
+                add_meal_option(meal_type, meal_option, meal_options)
+            elif action == "Remove an existing option":
+                remove_meal_option(meal_type, meal_option, meal_options)
+
+            # After modification, show only updated meal options
+            st.subheader(f"Updated {meal_type.capitalize()} Options")
+            st.write(meal_options[meal_type])
+
+            # Save changes
+            save_meal_options(meal_options)
+
+    st.info("Remember to update your meal options regularly to keep your meals diverse and fresh!")
+
+# Streamlit Page Selection
 def main():
-    # Sidebar for navigation
-    page = st.sidebar.radio("Select a page", ["Home", "Customize Meal Lists"])
-    
-    if page == "Home":
-        home_page()
-    elif page == "Customize Meal Lists":
-        customize_page()
+    menu = ["Homepage", "Customize Meal Lists"]
+    choice = st.sidebar.selectbox("Select a page", menu)
 
-# Run the app
+    if choice == "Homepage":
+        st.title("Welcome to Your Meal Planner!")
+        st.write("On the **Customize Meal Lists** page, you can modify your meal options.")
+        # Add your homepage content here
+    elif choice == "Customize Meal Lists":
+        customize_meal_page()
+
 if __name__ == "__main__":
     main()
