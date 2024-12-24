@@ -250,4 +250,4 @@ def main():
         customize_meal_page()  # Customize meal options
 
 if __name__ == "__main__":
-    main()
+   
